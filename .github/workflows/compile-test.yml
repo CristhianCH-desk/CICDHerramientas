@@ -1,0 +1,53 @@
+name: CI/CD con Reporte de Tests
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Descargar el código
+      uses: actions/checkout@v4
+
+    - name: Compilar ejecutable y suite de pruebas
+      run: |
+        # Compila el programa normal
+        gcc main.c -o programa_principal
+        
+        # Compila el archivo de pruebas incluyendo main.c (para que tenga acceso a la función sumar)
+        gcc test.c main.c -o ejecutar_tests
+
+    - name: Ejecutar y Mostrar Tests
+      run: |
+        # Agrupamos la salida para que se vea ordenada en la interfaz de GitHub
+        echo "::group::Reporte Detallado de Pruebas Unitarias"
+        
+        # Ejecutamos el binario de pruebas
+        ./ejecutar_tests
+        
+        # Guardamos el código de salida de los tests (0 si pasaron, 1 si fallaron)
+        TEST_RESULT=$?
+        
+        echo "::endgroup::"
+        
+        # Si el resultado fue diferente de 0, forzamos la caída del paso de GitHub
+        if [ $TEST_RESULT -ne 0 ]; then
+          echo "Algunos tests fallaron. Deteniendo pipeline."
+          exit 1
+        else
+          echo "¡Todos los tests pasaron con éxito!"
+        fi
+
+    - name: Desplegar por SSH
+      if: success()
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        port: ${{ secrets.SSH_PORT }}
+        script: |
+          echo "Desplegando en el servidor seguro..."
