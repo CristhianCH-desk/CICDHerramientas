@@ -1,7 +1,6 @@
 #include <stdio.h>
 
-// Declaramos la función que vamos a testear
-int sumar(int a, int b);
+#include "lib.h"
 
 int main() {
     int errores = 0;

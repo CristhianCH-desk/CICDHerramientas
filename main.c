@@ -1,9 +1,6 @@
 #include <stdio.h>
 
-// Función que queremos probar
-int sumar(int a, int b) {
-    return a + b;
-}
+#include "lib.h"
 
 int main() {
     int resultado_test = sumar(5, 3);
