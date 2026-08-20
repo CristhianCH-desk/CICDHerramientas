@@ -15,10 +15,10 @@ jobs:
     - name: Compilar ejecutable y suite de pruebas
       run: |
         # Compila el programa normal
-        gcc main.c -o programa_principal
+        gcc main.c lib.c lib.h -o programa_principal
         
         # Compila el archivo de pruebas incluyendo main.c (para que tenga acceso a la función sumar)
-        gcc test.c main.c -o ejecutar_tests
+        gcc test.c lib.c lib.h -o ejecutar_tests
 
     - name: Ejecutar y Mostrar Tests
       run: |
